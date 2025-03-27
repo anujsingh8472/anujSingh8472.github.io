@@ -1,0 +1,31 @@
+name: Auto Update Data
+
+on:
+  schedule:
+    - cron: "0 0 * * *"  # हर दिन अपडेट होगा
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      
+      - name: Setup Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.9"
+
+      - name: Install Dependencies
+        run: pip install gspread oauth2client
+      
+      - name: Run Scraper
+        run: python scraper.py
+      
+      - name: Commit & Push Changes
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git add data.json
+          git commit -m "🔄 Auto-updated data.json"
+          git push
